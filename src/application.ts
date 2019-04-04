@@ -1,5 +1,6 @@
 import cors from "cors";
-import express, {Application} from "express";
+import {Application} from "express";
+import {createExpressServer} from "routing-controllers";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import {Container, Inject, Service} from "typedi";
@@ -7,6 +8,7 @@ import {buildSchema} from "type-graphql";
 import {ApolloServer} from "apollo-server-express";
 import {PostgressConnector} from "./connector/database";
 import {resolvers} from "./graphql";
+import {controllers} from "./controllers";
 import {User} from "./module/user/model";
 import {UserRole} from "./module/user/role";
 import Logger from "./connector/logger";
@@ -34,7 +36,9 @@ export default class ApplicationServer {
   public constructor(@Inject("settings") settings: any) {
     this.settings = settings;
     this.port = process.env.PORT || settings.Port;
-    this.app = express();
+    this.app = createExpressServer({
+      controllers,
+    });
 
     this.registerBodyParsers(settings);
     this.configureHeaders(settings);
@@ -94,15 +98,15 @@ export default class ApplicationServer {
   private async init() {
     try {
       await this.initDatabase();
-      this.logger.info(`Successfully connected to the database: ${this.settings.Database.host}.${this.settings.Database.database}`);
+      this.logger.info(`Database: Successfully connected to: ${this.settings.Database.host}.${this.settings.Database.database}`);
     } catch (error) {
-      this.logger.error(`Error while connecting to the database: ${error.message}`);
+      this.logger.error(`Database: Error while connecting: ${error.message}`);
     }
 
     try {
       await this.initServer();
     } catch (error) {
-      this.logger.error(`Error while init server: ${error.message}`);
+      this.logger.error(`Server: Error while init: ${error.message}`);
     }
 
     return this;
@@ -110,13 +114,13 @@ export default class ApplicationServer {
 
   public async run() {
     try {
-      this.logger.info(`Running server...`);
+      this.logger.info(`Server: Init...`);
 
       await this.init();
 
-      this.app.listen(this.port, () => this.logger.info(`Server running on port: ${this.port}`));
+      this.app.listen(this.port, () => this.logger.info(`Server: Running on port: ${this.port}`));
     } catch (error) {
-      this.logger.error(`Error while starting server: ${error.message}`);
+      this.logger.error(`Server: Error while starting: ${error.message}`);
     }
   }
 }

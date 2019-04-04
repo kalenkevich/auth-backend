@@ -1,7 +1,10 @@
 import {Service} from "typedi";
+import ConnectorInterface from '../interface';
 
 @Service()
-export default class Logger {
+export default class Logger implements ConnectorInterface {
+  settings: any;
+
   public trace(message: string) {
     console.log(message);
   }
@@ -16,5 +19,9 @@ export default class Logger {
 
   public error(message: string) {
     console.log(message);
+  }
+
+  connect() {
+    return Promise.resolve();
   }
 }
