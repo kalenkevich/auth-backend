@@ -1,5 +1,5 @@
-import { User } from "../../module/user/model";
+import {User} from "../../module/user/model";
 
 export default [
-    User,
+  User,
 ];

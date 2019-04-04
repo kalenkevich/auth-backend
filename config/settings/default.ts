@@ -1,7 +1,7 @@
 export default {
-    Port: 9002,
-    TokenSecret: "default-token-secret",
-    Database: {
-        Url: "",
-    },
+  Port: 9002,
+  TokenSecret: "default-token-secret",
+  Database: {
+    Url: "",
+  },
 }

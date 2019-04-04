@@ -1,8 +1,9 @@
-import { Connection, EntityManager } from "typeorm";
+import {Connection, EntityManager} from "typeorm";
 
 export default interface IDatabaseConnector {
-    settings: any;
-    connection: Connection;
-    entityManager: EntityManager;
-    connect(): Promise<any>;
+  settings: any;
+  connection: Connection;
+  entityManager: EntityManager;
+
+  connect(): Promise<any>;
 }
