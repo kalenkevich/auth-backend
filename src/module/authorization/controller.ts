@@ -35,8 +35,6 @@ export default class AuthorizationController {
 
       res.cookie("token", user.token);
 
-      this.logger.info(`User ${user.email} was successfully signed up to the system`);
-
       return user;
     } catch (error) {
       this.logger.error(error);

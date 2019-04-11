@@ -9,8 +9,7 @@ import {ApolloServer} from "apollo-server-express";
 import {PostgressConnector} from "./connector/database";
 import {resolvers} from "./graphql";
 import {controllers} from "./controllers";
-import {User} from "./module/user/model";
-import {UserRole} from "./module/user/role";
+import {User, UserRoles} from "./module/user/model";
 import Logger from "./connector/logger";
 
 @Service()
@@ -64,7 +63,7 @@ export default class ApplicationServer {
 
     const schema = await buildSchema({
       resolvers,
-      authChecker: ({root, args, context, info}, roles: UserRole[]) => {
+      authChecker: ({root, args, context, info}, roles: UserRoles[]) => {
         const {user} = context;
 
         return roles.indexOf(user.role) !== -1;

@@ -22,8 +22,6 @@ export default class AuthorizationResolver {
 
       res.cookie("token", user.token);
 
-      this.logger.info(`User ${signInData.email} was successfully signed in to the system`);
-
       return user;
     } catch (error) {
       this.logger.error(error);
@@ -39,8 +37,6 @@ export default class AuthorizationResolver {
 
       res.cookie("token", user.token);
 
-      this.logger.info(`User ${user.email} was successfully signed up to the system`);
-
       return user;
     } catch (error) {
       this.logger.error(error);
@@ -53,11 +49,7 @@ export default class AuthorizationResolver {
   public async authorize(@Ctx("request") req: Request) {
     try {
       const {token} = req.cookies;
-      const user = await this.authorizationService.authenticate(token);
-
-      this.logger.info(`User ${user.email} was successfully authorized in the system`);
-
-      return user;
+      return this.authorizationService.authenticate(token);
     } catch (error) {
       this.logger.error(error);
 
@@ -73,8 +65,6 @@ export default class AuthorizationResolver {
       await this.authorizationService.signOut(token);
 
       res.clearCookie("token");
-
-      this.logger.info(`User was signed out with token: ${token}`);
 
       return true;
     } catch (error) {

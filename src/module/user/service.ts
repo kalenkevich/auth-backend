@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt-nodejs";
 import {Service} from "typedi";
-import {getRepository, Repository, UpdateResult} from "typeorm";
-import {User, UserInput} from "./model";
+import {DeleteResult, getRepository, Repository, UpdateResult} from "typeorm";
+import {User, UserInput, UserRoles} from "./model";
 
 @Service()
 export class UserService {
@@ -24,6 +24,14 @@ export class UserService {
 
   public updateUser(user: UserInput): Promise<UpdateResult> {
     return this.repository.update(user.id, {...user});
+  }
+
+  public updateUserRoles(userId: number, roles: string[]): Promise<UpdateResult> {
+    return this.repository.update(userId, { roles });
+  }
+
+  public deleteUser(userId: number): Promise<DeleteResult> {
+    return this.repository.delete(userId);
   }
 
   public setToken(userId: number, token: string) {
