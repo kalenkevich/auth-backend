@@ -68,7 +68,7 @@ export default class AuthorizationController {
       await this.authorizationService.signOut(token);
 
       res.clearCookie("token");
-      res.set('Authorization', null);
+      res.removeHeader('Authorization');
 
       return true;
     } catch (error) {
