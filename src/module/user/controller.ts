@@ -3,7 +3,7 @@ import {Get, Post, Put, Delete, JsonController, Param, Body, Ctx} from "routing-
 import { UserService }  from "./service";
 import { checkPermissions } from './resolver';
 import Logger from "../../connector/logger";
-import {User, UserInput, UserRoles} from "./model";
+import {User, UserInput, UserRoles, UserSearchQuery} from "./model";
 
 @JsonController()
 export default class UserController {
@@ -28,6 +28,17 @@ export default class UserController {
   public async getAllUsers() {
     try {
       return this.userService.getAllUsers();
+    } catch (error) {
+      this.logger.error(error);
+
+      throw error;
+    }
+  }
+
+  @Post("/user/search")
+  public searchUsers(@Ctx() user: User, @Body() searchQuery: UserSearchQuery) {
+    try {
+      return this.userService.search(searchQuery);
     } catch (error) {
       this.logger.error(error);
 

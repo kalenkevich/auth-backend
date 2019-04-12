@@ -48,8 +48,13 @@ export default class AuthorizationResolver {
   @Query((returns) => User)
   public async authorize(@Ctx("request") req: Request) {
     try {
-      const {token} = req.cookies;
-      return this.authorizationService.authenticate(token);
+      const token = req.get('Authorization') || (req.cookies && req.cookies.token);
+
+      if (token) {
+        return this.authorizationService.authenticate(token);
+      }
+
+      throw new Error('Authorization token is not provided');
     } catch (error) {
       this.logger.error(error);
 
@@ -65,6 +70,7 @@ export default class AuthorizationResolver {
       await this.authorizationService.signOut(token);
 
       res.clearCookie("token");
+      res.set('Authorization', null);
 
       return true;
     } catch (error) {

@@ -1,6 +1,5 @@
-import {Field, ID, InputType, ObjectType} from "type-graphql";
+import {Field, ID, InputType, ObjectType, registerEnumType} from "type-graphql";
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import { registerEnumType } from "type-graphql";
 
 export enum UserApplications {
   AUTH = 'AUTH',
@@ -25,6 +24,10 @@ registerEnumType(UserRoles, {
 registerEnumType(UserApplications, {
   name: "UserApplications",
 });
+
+export class UserSearchQuery {
+  public userIds?: number[]
+}
 
 @InputType()
 export class UserInput {

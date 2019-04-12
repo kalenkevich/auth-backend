@@ -1,13 +1,13 @@
 import bcrypt from "bcrypt-nodejs";
 import {Service} from "typedi";
-import {DeleteResult, getRepository, Repository, UpdateResult} from "typeorm";
-import {User, UserInput, UserRoles} from "./model";
+import {DeleteResult, getRepository, Repository, UpdateResult, In} from "typeorm";
+import {User, UserInput, UserSearchQuery} from "./model";
 
 @Service()
 export class UserService {
   private repository: Repository<User> = getRepository(User);
 
-  public async getUser(selectOptions: any): Promise<User> {
+  public getUser(selectOptions: any): Promise<User> {
     return this.repository.findOne(selectOptions);
   }
 
@@ -20,6 +20,18 @@ export class UserService {
     const result = await this.repository.save(createdUser);
 
     return result[0];
+  }
+
+  public search(userSearchQuery: UserSearchQuery): Promise<User[]> {
+    if (userSearchQuery.userIds.length > 0) {
+      return this.repository.find({
+        where: {
+          id: In(userSearchQuery.userIds),
+        }
+      });
+    }
+
+    return Promise.resolve([]);
   }
 
   public updateUser(user: UserInput): Promise<UpdateResult> {
