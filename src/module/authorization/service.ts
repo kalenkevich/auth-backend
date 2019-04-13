@@ -2,9 +2,9 @@ import {ApolloError} from "apollo-error";
 import * as bcrypt from "bcrypt-nodejs";
 import * as jwt from "jsonwebtoken";
 import {Inject, Service} from "typedi";
-import {User} from "../user/model";
+import {SocialProvider, User} from "../user/model";
 import {UserService} from "../user/service";
-import {UserSignInInput, UserSignUpInput} from "./model";
+import {SocialUserData, UserSignInInput, UserSignUpInput} from "./model";
 import EmailService from "../../service/mailService";
 
 @Service()
@@ -52,6 +52,22 @@ export default class AuthorizationService {
     } else {
       throw new ApolloError("Email or password is invalid", 401);
     }
+  }
+
+  public async signInWith(provider: string, socialUserData: SocialUserData): Promise<User> {
+    const foundedUser = await this.userService.getUser({ providerUserId: socialUserData.providerUserId });
+    const { token } = socialUserData;
+
+    if (foundedUser) {
+      await this.userService.setToken(foundedUser.id, socialUserData.token);
+    } else {
+      await this.userService.createUser({
+        ...socialUserData,
+        provider,
+      });
+    }
+
+    return this.authenticate(token);
   }
 
   public async regenerateToken(user: User): Promise<string> {

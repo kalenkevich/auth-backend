@@ -20,3 +20,21 @@ export class UserSignUpInput {
   @Field()
   public password: string;
 }
+
+@InputType()
+export class SocialUserData {
+  @Field()
+  public name: string;
+
+  @Field()
+  public email: string;
+
+  @Field()
+  public avatarUrl: string;
+
+  @Field()
+  public token: string;
+
+  @Field()
+  public providerUserId: string;
+}

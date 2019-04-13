@@ -17,13 +17,18 @@ export enum UserRoles {
   ZENVO_HOLIDAY_MANAGER = 'ZENVO_HOLIDAY_MANAGER', // manager user role only for Zenvo.Holiday
 }
 
-registerEnumType(UserRoles, {
-  name: "UserRoles",
-});
+export enum SocialProvider {
+  TWITTER = 'twitter',
+  FACEBOOK = 'facebook',
+  LINKEDIN = 'linkedin',
+  VK = 'vk',
+  INSTAGRAM = 'instagram',
+  GOOGLE = 'google',
+}
 
-registerEnumType(UserApplications, {
-  name: "UserApplications",
-});
+registerEnumType(UserRoles, { name: "UserRoles" });
+registerEnumType(UserApplications, { name: "UserApplications" });
+registerEnumType(SocialProvider, { name: "SocialProvider" });
 
 export class UserSearchQuery {
   public userIds?: number[]
@@ -74,7 +79,7 @@ export class User {
   @Field((type) => [UserApplications])
   public applications: string[];
 
-  @Column()
+  @Column({ nullable: true })
   public password: string;
 
   @Column({default: false})
@@ -85,6 +90,14 @@ export class User {
 
   @Column({nullable: true})
   public token: string;
+
+  @Field({nullable: true})
+  @Column({nullable: true})
+  public provider: string;
+
+  @Field({nullable: true})
+  @Column({nullable: true})
+  public providerUserId: string;
 
   @Column({default: ""})
   @Field({defaultValue: ""})

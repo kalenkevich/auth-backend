@@ -2,8 +2,8 @@ import {ApolloError} from "apollo-error";
 import {Arg, Ctx, Mutation, Query, Resolver} from "type-graphql";
 import {Inject} from "typedi";
 import {Request, Response} from "express";
-import {User} from "../user/model";
-import {UserSignInInput, UserSignUpInput} from "./model";
+import {SocialProvider, User} from "../user/model";
+import {SocialUserData, UserSignInInput, UserSignUpInput} from "./model";
 import Logger from "../../connector/logger";
 import AuthorizationService from "./service";
 
@@ -19,6 +19,21 @@ export default class AuthorizationResolver {
   public async signIn(@Arg("signInData") signInData: UserSignInInput, @Ctx("response") res: Response) {
     try {
       const user = await this.authorizationService.signIn(signInData);
+
+      res.cookie("token", user.token);
+
+      return user;
+    } catch (error) {
+      this.logger.error(error);
+
+      throw error;
+    }
+  }
+
+  @Mutation((returns) => User)
+  public async signInWith(@Arg("provider") provider: SocialProvider, @Arg("socialUserData") socialUserData: SocialUserData, @Ctx("response") res: Response) {
+    try {
+      const user = await this.authorizationService.signInWith(provider, socialUserData);
 
       res.cookie("token", user.token);
 
