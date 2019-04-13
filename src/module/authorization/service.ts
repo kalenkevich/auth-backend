@@ -5,16 +5,19 @@ import {Inject, Service} from "typedi";
 import {User} from "../user/model";
 import {UserService} from "../user/service";
 import {UserSignInInput, UserSignUpInput} from "./model";
+import EmailService from "../../service/mailService";
 
 @Service()
 export default class AuthorizationService {
   @Inject()
   public userService: UserService;
+  @Inject()
+  public emailService: EmailService;
 
   @Inject("settings")
   settings: any;
 
-  public async signUp(signUpData: UserSignUpInput): Promise<User> {
+  public async signUp(signUpData: UserSignUpInput) {
     const existingUser = await this.userService.getUser({
       email: signUpData.email,
     });
@@ -24,7 +27,11 @@ export default class AuthorizationService {
     }
 
     const chippedPassword = bcrypt.hashSync(signUpData.password);
-    await this.userService.createUser({...signUpData, password: chippedPassword});
+    const user = await this.userService.createUser({
+      ...signUpData,
+      password: chippedPassword,
+    });
+    await this.sendVerificationEmail(user);
 
     return this.signIn(signUpData);
   }
@@ -37,8 +44,6 @@ export default class AuthorizationService {
 
       if (!isValidPassword) {
         throw new ApolloError("Email or password is invalid", 401);
-      } else if (!user.active) {
-        throw new ApolloError("Account is not yet activated. Please check your e-mail for activation link.", 401);
       } else {
         const token = await this.regenerateToken(user);
 
@@ -72,9 +77,43 @@ export default class AuthorizationService {
     return user;
   }
 
-  public async signOut(token: string) {
-    const user = await this.userService.getUser({token});
-
+  public async signOut(user: User) {
     return this.userService.removeToken(user.id);
+  }
+
+  public async sendVerificationEmail(user: User) {
+    const verificationToken = bcrypt.hashSync(Date.now().toString());
+    const safeToken = encodeURIComponent(verificationToken);
+
+    await this.userService.setVerificationToken(user.id, verificationToken);
+    await this.emailService.sendMail({
+      to: user.email,
+      subject: 'Verify your email address please',
+      html: `
+        Dear ${user.name},
+        <br/>
+        Please, follow this <a href="http://localhost:8082/verify?token=${safeToken}">link</a> to verify your email address.
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        Best regards,
+        <br/>
+        Zenvo team
+      `,
+    });
+  }
+
+  public async verifyEmail(user: User, verificationToken: string): Promise<User | boolean> {
+    const foundedUser = await this.userService.getUser(user.id);
+
+    if (foundedUser.verificationToken === verificationToken) {
+      await this.userService.removeVerificationToken(user.id);
+      await this.userService.makeActive(user.id);
+
+      return true;
+    }
+
+    return false;
   }
 }

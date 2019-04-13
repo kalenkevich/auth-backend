@@ -1,9 +1,10 @@
 import {Inject} from "typedi";
 import {Request, Response} from "express";
-import {Body, Get, JsonController, Post, Req, Res} from "routing-controllers";
+import {Body, Ctx, Get, JsonController, Post, Req, Res} from "routing-controllers";
 import {UserSignInInput, UserSignUpInput} from "./model";
 import Logger from "../../connector/logger";
 import AuthorizationService from "./service";
+import {User} from "../user/model";
 
 @JsonController()
 export default class AuthorizationController {
@@ -61,11 +62,10 @@ export default class AuthorizationController {
   }
 
   @Get("/sign-out")
-  async signOut(@Req() req: Request, @Res() res: Response) {
+  async signOut(@Req() req: Request, @Res() res: Response, @Ctx() user: User) {
     try {
-      const {token} = req.cookies;
 
-      await this.authorizationService.signOut(token);
+      await this.authorizationService.signOut(user);
 
       res.clearCookie("token");
       res.removeHeader('Authorization');

@@ -16,10 +16,9 @@ export class UserService {
   }
 
   public async createUser(userData: any): Promise<User> {
-    const createdUser = this.repository.create(userData);
-    const result = await this.repository.save(createdUser);
+    const createdUser = this.repository.create(userData as User);
 
-    return result[0];
+    return await this.repository.save(createdUser);
   }
 
   public search(userSearchQuery: UserSearchQuery): Promise<User[]> {
@@ -50,8 +49,20 @@ export class UserService {
     return this.repository.update(userId, {token});
   }
 
+  public setVerificationToken(userId: number, verificationToken: string): Promise<UpdateResult> {
+    return this.repository.update(userId, {verificationToken});
+  }
+
   public removeToken(userId: number): Promise<UpdateResult> {
     return this.repository.update(userId, {token: null});
+  }
+
+  public removeVerificationToken(userId: number): Promise<UpdateResult> {
+    return this.repository.update(userId, {verificationToken: null});
+  }
+
+  public makeActive(userId: number): Promise<UpdateResult> {
+    return this.repository.update(userId, {active: true});
   }
 
   public async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<UpdateResult | boolean> {

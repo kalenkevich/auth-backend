@@ -77,8 +77,11 @@ export class User {
   @Column()
   public password: string;
 
-  @Column({default: true})
-  public active: boolean = true;
+  @Column({default: false})
+  public active: boolean;
+
+  @Column({ nullable: true })
+  public verificationToken: string;
 
   @Column({nullable: true})
   public token: string;

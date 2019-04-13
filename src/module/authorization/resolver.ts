@@ -46,7 +46,7 @@ export default class AuthorizationResolver {
   }
 
   @Query((returns) => User)
-  public async authorize(@Ctx("request") req: Request) {
+  public async authorize(@Ctx("request") req: Request, @Ctx("response") res: Response) {
     try {
       const token = req.get('Authorization') || (req.cookies && req.cookies.token);
 
@@ -63,16 +63,44 @@ export default class AuthorizationResolver {
   }
 
   @Query((returns) => Boolean)
-  public async signOut(@Ctx("request") req: Request, @Ctx("response") res: Response) {
+  public async signOut(@Ctx("user") user: User, @Ctx("response") res: Response) {
     try {
-      const {token} = req.cookies;
-
-      await this.authorizationService.signOut(token);
+      await this.authorizationService.signOut(user);
 
       res.clearCookie("token");
       res.removeHeader('Authorization');
 
       return true;
+    } catch (error) {
+      this.logger.error(error);
+
+      throw error;
+    }
+  }
+
+  @Query((returns) => Boolean)
+  public async resendVerificationEmail(@Ctx("user") user: User) {
+    try {
+      await this.authorizationService.sendVerificationEmail(user);
+
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+
+      throw error;
+    }
+  }
+
+  @Query((returns) => Boolean)
+  public async verifyEmail(@Ctx("user") user: User, @Arg("verificationToken") verificationToken: string) {
+    try {
+      const result = await this.authorizationService.verifyEmail(user, verificationToken);
+
+      if (result) {
+        return true;
+      }
+
+      throw new Error('Email verification token is not valid');
     } catch (error) {
       this.logger.error(error);
 

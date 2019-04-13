@@ -1,4 +1,5 @@
 import cors from "cors";
+import sgMail from "@sendgrid/mail";
 import {Application} from "express";
 import {createExpressServer} from "routing-controllers";
 import bodyParser from "body-parser";
@@ -94,12 +95,24 @@ export default class ApplicationServer {
     Container.set("EntityManager", this.dbConnector.entityManager);
   }
 
+  private async initSendGrid() {
+    sgMail.setApiKey(this.settings.SendGridAPIKey);
+  }
+
   private async init() {
     try {
       await this.initDatabase();
       this.logger.info(`Database: Successfully connected to: ${this.settings.Database.host}.${this.settings.Database.database}`);
     } catch (error) {
       this.logger.error(`Database: Error while connecting: ${error.message}`);
+    }
+
+    try {
+      await this.initSendGrid();
+
+      this.logger.info(`Send Grid: Successfully connected`);
+    } catch (error) {
+      this.logger.error(`Send Grid: Error while init: ${error.message}`);
     }
 
     try {
