@@ -92,7 +92,31 @@ export default class AuthorizationService {
       html: `
         Dear ${user.name},
         <br/>
-        Please, follow this <a href="http://localhost:8082/verify?token=${safeToken}">link</a> to verify your email address.
+        Please, follow this <a href="${this.settings.AuthFrontendUrl}/verify/email/confirm?token=${safeToken}">link</a> to verify your email address.
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        Best regards,
+        <br/>
+        Zenvo team
+      `,
+    });
+  }
+
+  public async sendResetPasswordEmail(user: User) {
+    const verificationToken = bcrypt.hashSync(Date.now().toString());
+    const safeToken = encodeURIComponent(verificationToken);
+    const safeEmail = encodeURIComponent(user.email);
+
+    await this.userService.setVerificationToken(user.id, verificationToken);
+    await this.emailService.sendMail({
+      to: user.email,
+      subject: 'Reset your password',
+      html: `
+        Dear ${user.name},
+        <br/>
+        Please, follow this <a href="${this.settings.AuthFrontendUrl}/reset/password/confirm?email=${safeEmail}&token=${safeToken}">link</a> to reset your password.
         <br/>
         <br/>
         <br/>
@@ -110,6 +134,33 @@ export default class AuthorizationService {
     if (foundedUser.verificationToken === verificationToken) {
       await this.userService.removeVerificationToken(user.id);
       await this.userService.makeActive(user.id);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  public async initiateResetPassword(email: string) {
+    const foundedUser = await this.userService.getUser({ email });
+
+    if (foundedUser) {
+      await this.sendResetPasswordEmail(foundedUser);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  public async confirmResetPassword(email: string, verificationToken: string, newPassword: string) {
+    const foundedUser = await this.userService.getUser({ email });
+
+    if (foundedUser.verificationToken === verificationToken) {
+      const chippedPassword = bcrypt.hashSync(newPassword);
+
+      await this.userService.removeVerificationToken(foundedUser.id);
+      await this.userService.updatePassword(foundedUser.id, chippedPassword);
 
       return true;
     }

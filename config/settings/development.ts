@@ -15,6 +15,7 @@ export default {
     'http://localhost:8084',
     'http://localhost:8085',
   ],
+  AuthFrontendUrl: "http://development.auth.kalenkevich.com",
   Database: {
     host: "ec2-54-228-243-238.eu-west-1.compute.amazonaws.com",
     port: 5432,

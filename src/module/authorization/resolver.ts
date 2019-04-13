@@ -107,4 +107,26 @@ export default class AuthorizationResolver {
       throw error;
     }
   }
+
+  @Query((returns) => Boolean)
+  public async initiateResetPassword(@Arg("email") email: string) {
+    try {
+      return this.authorizationService.initiateResetPassword(email);
+    } catch (error) {
+      this.logger.error(error);
+
+      throw error;
+    }
+  }
+
+  @Query((returns) => Boolean)
+  public async confirmResetPassword(@Arg("email") email: string, @Arg("verificationToken") verificationToken: string, @Arg("newPassword") newPassword:string) {
+    try {
+      return this.authorizationService.confirmResetPassword(email, verificationToken, newPassword);
+    } catch (error) {
+      this.logger.error(error);
+
+      throw error;
+    }
+  }
 }

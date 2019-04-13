@@ -7,4 +7,5 @@ export default {
     password: "Sonyxperia!2",
     database: "auth",
   },
+  AuthFrontendUrl: "http://localhost:8082",
 }

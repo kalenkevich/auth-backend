@@ -65,6 +65,10 @@ export class UserService {
     return this.repository.update(userId, {active: true});
   }
 
+  public async updatePassword(userId: number, newPassword: string): Promise<UpdateResult | boolean> {
+    return this.repository.update(userId, {password: newPassword});
+  }
+
   public async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<UpdateResult | boolean> {
     const user = await this.getUser({id: userId});
     const isValidPassword = bcrypt.compareSync(oldPassword, user.password);
