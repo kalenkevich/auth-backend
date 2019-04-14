@@ -31,9 +31,9 @@ export default class AuthorizationResolver {
   }
 
   @Mutation((returns) => User)
-  public async signInWith(@Arg("provider") provider: SocialProvider, @Arg("socialUserData") socialUserData: SocialUserData, @Ctx("response") res: Response) {
+  public async signInWith(@Arg("provider") provider: SocialProvider, @Arg("code") code: string, @Ctx("response") res: Response) {
     try {
-      const user = await this.authorizationService.signInWith(provider, socialUserData);
+      const user = await this.authorizationService.signInWith(provider, code);
 
       res.cookie("token", user.token);
 

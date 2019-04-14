@@ -1,21 +1,26 @@
-import {ApolloError} from "apollo-error";
 import * as bcrypt from "bcrypt-nodejs";
 import * as jwt from "jsonwebtoken";
+import {ApolloError} from "apollo-error";
 import {Inject, Service} from "typedi";
-import {SocialProvider, User} from "../user/model";
+import {User} from "../user/model";
 import {UserService} from "../user/service";
-import {SocialUserData, UserSignInInput, UserSignUpInput} from "./model";
+import {UserSignInInput, UserSignUpInput} from "./model";
 import EmailService from "../../service/mailService";
+import SocialService from "../../service/socialService";
 
 @Service()
 export default class AuthorizationService {
+  @Inject("settings")
+  settings: any;
+
   @Inject()
   public userService: UserService;
+
   @Inject()
   public emailService: EmailService;
 
-  @Inject("settings")
-  settings: any;
+  @Inject()
+  public socialService: SocialService;
 
   public async signUp(signUpData: UserSignUpInput) {
     const existingUser = await this.userService.getUser({
@@ -54,9 +59,9 @@ export default class AuthorizationService {
     }
   }
 
-  public async signInWith(provider: string, socialUserData: SocialUserData): Promise<User> {
+  public async signInWith(provider: string, code: string): Promise<User> {
+    const socialUserData = await this.socialService.signInWith(provider, code);
     const foundedUser = await this.userService.getUser({ providerUserId: socialUserData.providerUserId });
-    const { token } = socialUserData;
 
     if (foundedUser) {
       await this.userService.setToken(foundedUser.id, socialUserData.token);
@@ -67,7 +72,7 @@ export default class AuthorizationService {
       });
     }
 
-    return this.authenticate(token);
+    return this.authenticate(socialUserData.token);
   }
 
   public async regenerateToken(user: User): Promise<string> {
