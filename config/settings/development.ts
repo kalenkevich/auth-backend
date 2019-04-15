@@ -1,3 +1,5 @@
+const AuthFrontendUrl = "http://development.auth.kalenkevich.com";
+
 export default {
   AllowedClientOrigins: [
     'https://development.auth.kalenkevich.com',
@@ -15,7 +17,7 @@ export default {
     'http://localhost:8084',
     'http://localhost:8085',
   ],
-  AuthFrontendUrl: "http://development.auth.kalenkevich.com",
+  AuthFrontendUrl,
   Database: {
     host: "ec2-54-228-243-238.eu-west-1.compute.amazonaws.com",
     port: 5432,
@@ -23,4 +25,10 @@ export default {
     password: "87a5a22507623f927cccd866340ec4858553e18873162c3b72a1f552d08d73c1",
     database: "dcn0jvgag6vfep",
   },
+  TwitterAppRedirectUrl: `${AuthFrontendUrl}/social/twitter/callback`,
+  FacebookAppRedirectUrl: `${AuthFrontendUrl}/social/facebook/callback`,
+  LinkedInAppRedirectUrl: `${AuthFrontendUrl}/social/linkedin/callback`,
+  VkAppRedirectUrl: `${AuthFrontendUrl}/social/vk/callback`,
+  InstagramAppRedirectUrl: `${AuthFrontendUrl}/social/instagram/callback`,
+  GoogleAppRedirectUrl: `${AuthFrontendUrl}/social/google/callback`,
 }

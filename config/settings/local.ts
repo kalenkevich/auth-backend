@@ -1,3 +1,5 @@
+const AuthFrontendUrl = "http://localhost:8082";
+
 export default {
   AllowedClientOrigins: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
   Database: {
@@ -7,5 +9,11 @@ export default {
     password: "Sonyxperia!2",
     database: "auth",
   },
-  AuthFrontendUrl: "http://localhost:8082",
+  AuthFrontendUrl,
+  TwitterAppRedirectUrl: `${AuthFrontendUrl}/social/twitter/callback`,
+  FacebookAppRedirectUrl: `${AuthFrontendUrl}/social/facebook/callback`,
+  LinkedInAppRedirectUrl: `${AuthFrontendUrl}/social/linkedin/callback`,
+  VkAppRedirectUrl: `${AuthFrontendUrl}/social/vk/callback`,
+  InstagramAppRedirectUrl: `${AuthFrontendUrl}/social/instagram/callback`,
+  GoogleAppRedirectUrl: `${AuthFrontendUrl}/social/google/callback`,
 }
