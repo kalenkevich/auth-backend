@@ -69,6 +69,7 @@ export default class AuthorizationService {
       await this.userService.createUser({
         ...socialUserData,
         provider,
+        active: true,
       });
     }
 
