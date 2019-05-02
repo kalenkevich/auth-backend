@@ -1,7 +1,12 @@
 const AuthFrontendUrl = "http://localhost:8082";
 
 export default {
-  AllowedClientOrigins: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
+  AllowedClientOrigins: [
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://localhost:8082',
+    'http://localhost:8083',
+  ],
   Database: {
     host: "localhost",
     port: 5432,

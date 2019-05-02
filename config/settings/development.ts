@@ -10,6 +10,8 @@ export default {
     'http://blog-backend-development.herokuapp.com',
     'https://development.holiday.kalenkevich.com',
     'http://development.holiday.kalenkevich.com',
+    'https://ui-components.kalenkevich.com',
+    'http://ui-components.kalenkevich.com',
     'http://localhost:8080',
     'http://localhost:8081',
     'http://localhost:8082',
